@@ -62,6 +62,7 @@ const recipes = await getCollection('recipes');
                     prepTime={recipe.data.prepTime}
                     servings={recipe.data.servings}
                     difficulty={recipe.data.difficulty}
+                    tags={recipe.data.tags}
                     index={index + 1}
                   />
                 ))}
