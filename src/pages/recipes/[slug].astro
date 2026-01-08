@@ -1,0 +1,31 @@
+---
+import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import RecipeLayout from '../../layouts/RecipeLayout.astro';
+
+// Generate a page for each recipe
+export const getStaticPaths = (async () => {
+  const recipes = await getCollection('recipes');
+  return recipes.map((recipe) => ({
+    params: { slug: recipe.slug },
+    props: { recipe },
+  }));
+}) satisfies GetStaticPaths;
+
+const { recipe } = Astro.props;
+const { Content } = await recipe.render();
+---
+
+<RecipeLayout
+  title={recipe.data.title}
+  description={recipe.data.description}
+  prepTime={recipe.data.prepTime}
+  cookTime={recipe.data.cookTime}
+  servings={recipe.data.servings}
+  difficulty={recipe.data.difficulty}
+  images={recipe.data.images}
+  ingredients={recipe.data.ingredients}
+  tags={recipe.data.tags}
+>
+  <Content />
+</RecipeLayout>

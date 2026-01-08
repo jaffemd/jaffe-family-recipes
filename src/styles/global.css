@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Clean modern color scheme - black pages on dark gray background */
+:root {
+  --page-bg: #000000;
+  --page-dark: #0a0a0a;
+  --ink-color: #ffffff;
+  --ink-light: #b0b0b0;
+  --ink-alpha-10: rgba(255, 255, 255, 0.1);
+  --ink-alpha-20: rgba(255, 255, 255, 0.2);
+  --ink-alpha-5: rgba(255, 255, 255, 0.05);
+}
+
+/* Same colors in dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page-bg: #000000;
+    --page-dark: #0a0a0a;
+    --ink-color: #ffffff;
+    --ink-light: #b0b0b0;
+    --ink-alpha-10: rgba(255, 255, 255, 0.1);
+    --ink-alpha-20: rgba(255, 255, 255, 0.2);
+    --ink-alpha-5: rgba(255, 255, 255, 0.05);
+  }
+}
+
+/* Custom styles */
+@layer base {
+  body {
+    @apply font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+}
+
+@layer utilities {
+  .bg-page {
+    background-color: var(--page-bg);
+  }
+
+  .bg-page-dark {
+    background-color: var(--page-dark);
+  }
+
+  .text-ink {
+    color: var(--ink-color);
+  }
+
+  .text-ink-light {
+    color: var(--ink-light);
+  }
+
+  .border-ink\/10 {
+    border-color: var(--ink-alpha-10);
+  }
+
+  .border-ink\/20 {
+    border-color: var(--ink-alpha-20);
+  }
+
+  .hover\:bg-ink\/5:hover {
+    background-color: var(--ink-alpha-5);
+  }
+}

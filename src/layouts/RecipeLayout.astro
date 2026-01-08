@@ -1,0 +1,80 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Header from '../components/Header.astro';
+import MetadataDisplay from '../components/MetadataDisplay.astro';
+import IngredientList from '../components/IngredientList.astro';
+import RecipeGallery from '../components/RecipeGallery.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  prepTime: string;
+  cookTime: string;
+  servings: string;
+  difficulty?: 'Easy' | 'Medium' | 'Hard';
+  images?: string[];
+  ingredients: string[];
+  tags?: string[];
+}
+
+const { title, description, prepTime, cookTime, servings, difficulty, images, ingredients, tags } = Astro.props;
+const socialImage = images && images.length > 0 ? images[0] : undefined;
+---
+
+<BaseLayout title={`${title} | Jaffe Family Recipes`} description={description} image={socialImage}>
+  <Header />
+
+  <main class="min-h-screen flex items-start justify-center px-4 py-12">
+    <!-- Single Page Book Layout -->
+    <div class="max-w-5xl w-full bg-page shadow-2xl p-8 sm:p-12 lg:p-16 font-serif" style="filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));">
+
+      <!-- Recipe Header -->
+      <div class="mb-10 border-b-2 pb-8 border-ink/20">
+        <h1 class="text-4xl sm:text-5xl font-bold text-ink mb-4 leading-tight">{title}</h1>
+        <p class="text-lg sm:text-xl text-ink-light leading-relaxed mb-4">{description}</p>
+
+        {tags && tags.length > 0 && (
+          <div class="flex gap-2 flex-wrap mt-4">
+            {tags.map((tag) => (
+              <span class="text-xs uppercase tracking-wider px-3 py-1 bg-ink/10 text-ink-light rounded">{tag}</span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <!-- Recipe Metadata -->
+      <div class="mb-10">
+        <MetadataDisplay
+          prepTime={prepTime}
+          cookTime={cookTime}
+          servings={servings}
+          difficulty={difficulty}
+        />
+      </div>
+
+      <!-- Recipe Images -->
+      {images?.length > 0 && (
+        <div class="mb-10">
+          <RecipeGallery images={images} title={title} />
+        </div>
+      )}
+
+      <!-- Recipe Content -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <!-- Ingredients (Sidebar) -->
+        <div class="lg:col-span-1">
+          <IngredientList ingredients={ingredients} />
+        </div>
+
+        <!-- Instructions (Main Content) -->
+        <div class="lg:col-span-2">
+          <h2 class="text-2xl sm:text-3xl font-bold text-ink mb-6 border-b border-ink/20 pb-3">Instructions</h2>
+          <div class="prose prose-lg max-w-none text-[1.1rem] [&>*]:text-ink [&_h1]:text-ink [&_h2]:text-ink [&_h3]:text-ink [&_h4]:text-ink [&_p]:text-ink [&_li]:text-ink [&_strong]:text-ink [&_ol]:list-decimal [&_ol]:pl-6 [&_ol_li]:pl-2 [&_ol_li]:mb-4">
+            <slot />
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</BaseLayout>
