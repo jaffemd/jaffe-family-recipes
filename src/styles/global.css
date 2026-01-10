@@ -46,6 +46,14 @@
     background-color: var(--page-dark);
   }
 
+  .bg-card {
+    background-color: #0f0f0f;
+  }
+
+  .bg-card-hover {
+    background-color: #1a1a1a;
+  }
+
   .text-ink {
     color: var(--ink-color);
   }
@@ -62,7 +70,37 @@
     border-color: var(--ink-alpha-20);
   }
 
+  .border-card {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
   .hover\:bg-ink\/5:hover {
     background-color: var(--ink-alpha-5);
+  }
+
+  .shadow-card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+
+  .shadow-card-hover {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), 0 3px 6px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Custom scrollbar styling */
+  #recipe-list::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  #recipe-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  #recipe-list::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+
+  #recipe-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
   }
 }

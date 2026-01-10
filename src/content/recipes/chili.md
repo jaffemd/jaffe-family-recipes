@@ -1,5 +1,5 @@
 ---
-title: "Chili"
+title: "Turkey Chili"
 description: "Surprisingly healthy and filling turkey chili. This goes great for a game day family gathering or on a cold winter night. Make it your own with whatever spices and meat you want. Our favorites are ground turkey, ground beef, or beef stew meat, but this would also work well with alternatives such as impossible meat."
 blurb: "Surprisingly healthy and filling turkey chili"
 prepTime: "30 minutes"

@@ -46,25 +46,66 @@ const recipes = await getCollection('recipes');
           <div class="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black/10 to-transparent pointer-events-none"></div>
 
           <div class="font-serif">
-            <h2 class="text-3xl font-bold text-ink mb-8 border-b-2 border-ink/20 pb-4">
-              Table of Contents
-            </h2>
+            <div class="flex items-center justify-between mb-6 border-b-2 border-ink/20 pb-4">
+              <h2 class="text-3xl font-bold text-ink">
+                Recipes
+              </h2>
+              <span class="text-xl text-ink-light">({recipes.length})</span>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="mb-6 relative">
+              <input
+                type="text"
+                id="recipe-search"
+                placeholder="Search recipes..."
+                class="w-full bg-card border border-card rounded-lg px-4 py-3 pl-11 text-ink placeholder-ink-light focus:outline-none focus:border-primary/50 transition-colors"
+              />
+              <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-ink-light pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+              <button
+                id="clear-search"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-ink-light hover:text-ink transition-colors hidden"
+                aria-label="Clear search"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
 
             {recipes.length > 0 ? (
-              <div class="space-y-3 max-h-[600px] overflow-y-auto pr-2">
-                {recipes.map((recipe, index) => (
-                  <RecipeCard
-                    title={recipe.data.title}
-                    blurb={recipe.data.blurb}
-                    slug={recipe.slug}
-                    image={recipe.data.images?.[0]}
-                    prepTime={recipe.data.prepTime}
-                    servings={recipe.data.servings}
-                    difficulty={recipe.data.difficulty}
-                    tags={recipe.data.tags}
-                    index={index + 1}
-                  />
-                ))}
+              <div class="relative">
+                <div id="recipe-list" class="space-y-4 max-h-[600px] overflow-y-auto pr-2 scroll-smooth" style="scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;">
+                  {recipes.map((recipe, index) => (
+                  <div
+                    class="recipe-item"
+                    data-title={recipe.data.title.toLowerCase()}
+                    data-tags={(recipe.data.tags || []).join(' ').toLowerCase()}
+                  >
+                    <RecipeCard
+                      title={recipe.data.title}
+                      blurb={recipe.data.blurb}
+                      slug={recipe.slug}
+                      image={recipe.data.images?.[0]}
+                      prepTime={recipe.data.prepTime}
+                      servings={recipe.data.servings}
+                      difficulty={recipe.data.difficulty}
+                      tags={recipe.data.tags}
+                      index={index + 1}
+                    />
+                    </div>
+                  ))}
+                </div>
+
+                <!-- Fade gradient at bottom to indicate scrollable content -->
+                <div class="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-page via-page/60 to-transparent pointer-events-none"></div>
+              </div>
+
+              <!-- No Results Message -->
+              <div id="no-results" class="hidden text-center py-12">
+                <p class="text-ink-light italic text-lg">No recipes found matching your search.</p>
               </div>
             ) : (
               <p class="text-ink-light italic">No recipes yet. Start adding your family favorites!</p>
@@ -76,3 +117,88 @@ const recipes = await getCollection('recipes');
     </div>
   </main>
 </BaseLayout>
+
+<script>
+  // Debounce function to delay search execution
+  function debounce(func: Function, delay: number) {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    return function(...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func(...args), delay);
+    };
+  }
+
+  // Search functionality
+  function searchRecipes() {
+    const searchInput = document.getElementById('recipe-search') as HTMLInputElement;
+    const clearButton = document.getElementById('clear-search') as HTMLButtonElement;
+    const recipeItems = document.querySelectorAll('.recipe-item') as NodeListOf<HTMLElement>;
+    const noResults = document.getElementById('no-results') as HTMLElement;
+    const recipeList = document.getElementById('recipe-list') as HTMLElement;
+
+    if (!searchInput || !clearButton || !noResults || !recipeList) return;
+
+    // Perform search
+    const performSearch = () => {
+      const query = searchInput.value.toLowerCase().trim();
+      let visibleCount = 0;
+
+      // Show/hide clear button
+      if (query) {
+        clearButton.classList.remove('hidden');
+      } else {
+        clearButton.classList.add('hidden');
+      }
+
+      // Filter recipes
+      recipeItems.forEach((item) => {
+        const title = item.getAttribute('data-title') || '';
+        const tags = item.getAttribute('data-tags') || '';
+
+        const matches = title.includes(query) || tags.includes(query);
+
+        if (matches || !query) {
+          item.style.display = 'block';
+          visibleCount++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+
+      // Show/hide no results message
+      if (visibleCount === 0 && query) {
+        recipeList.classList.add('hidden');
+        noResults.classList.remove('hidden');
+      } else {
+        recipeList.classList.remove('hidden');
+        noResults.classList.add('hidden');
+      }
+    };
+
+    // Debounced search with 300ms delay
+    const debouncedSearch = debounce(performSearch, 300);
+
+    // Event listeners
+    searchInput.addEventListener('input', debouncedSearch);
+
+    clearButton.addEventListener('click', () => {
+      searchInput.value = '';
+      performSearch();
+      searchInput.focus();
+    });
+
+    // Allow pressing Enter to search immediately
+    searchInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+  }
+
+  // Initialize search when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', searchRecipes);
+  } else {
+    searchRecipes();
+  }
+</script>
